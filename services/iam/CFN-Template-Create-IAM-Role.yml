@@ -1,0 +1,371 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Parameters:
+    1RFCID:
+      Type: String
+      Default: RFCID
+      Description: Add Request For Change ID.
+    2RoleName:
+      Type: String
+      Default: RoleName
+      Description: >-
+        Specify name of IAM role to create.
+        Use CloudFormation stack name stack-iam-<ROLENAME> .
+    3IAMPATH:
+      Type: String
+      Default: /
+      Description: >-
+        Specify custom IAM path to deploy role to. Default IAM path is always / .
+        Example of custom IAM path would be /service-role/. 
+    4RoleTrustPolicy:
+      Type: String
+      Default: ''
+      Description: >-
+        Provide IAM Role Trust Policy JSON. 
+        Default IAM Role Trust will be a saml-provider named 'customer-saml' if left empty.
+    5CreateInstanceProfile:
+      Type: String
+      Default: 'No'
+      AllowedValues:
+        - 'Yes'
+        - 'No'
+    6InlcudeCustomerDenyPolicy:
+      Type: String
+      Default: 'Disable'
+      AllowedValues:
+        - 'Enable'
+        - 'Disable'
+    7InlcudeCustomerTimedDenyPolicy:
+      Type: String
+      Default: 'Disable'
+      AllowedValues:
+        - 'Enable'
+        - 'Disable'
+    8DenyAllAccessOutOfStartTime:
+      Type: String
+      Default: '2020-01-01T00:00:00Z'
+      Description: Deny All Access Out Of Start Time. Example Format "YYYY-MM-DDThh:mm:ssZ". Note If InlcudeCustomerTimedDenyPolicy is set to "Disable" this field is ignored.
+      AllowedPattern: "^\\d{4}-\\d{2}-\\d{2}T\\d{2}\\:\\d{2}\\:\\d{2}[Z]\\Z$"
+    9DenyAllAccessOutOfEndTime:
+      Type: String
+      Default: '2020-01-01T23:59:59Z'
+      Description: Deny All Access Out Of End Time. Example Format "YYYY-MM-DDThh:mm:ssZ". Note If InlcudeCustomerTimedDenyPolicy is set to "Disable" this field is ignored.
+      AllowedPattern: "^\\d{4}-\\d{2}-\\d{2}T\\d{2}\\:\\d{2}\\:\\d{2}[Z]\\Z$"
+    IAMRoleInlinePolicy01Name:
+      Type: String
+      Default: ''
+      Description: Provide IAM Role Inline Policy name.
+    IAMRoleInlinePolicy01:
+      Type: String
+      Default: ''
+      Description: Provide IAM Role Inline Policy JSON.
+    IAMRoleInlinePolicy02Name:
+      Type: String
+      Default: ''
+      Description: Provide IAM Role Inline Policy name.
+    IAMRoleInlinePolicy02:
+      Type: String
+      Default: ''
+      Description: Provide IAM Role Inline Policy JSON.
+    IAMRoleInlinePolicy03Name:
+      Type: String
+      Default: ''
+      Description: Provide IAM Role Inline Policy name.
+    IAMRoleInlinePolicy03:
+      Type: String
+      Default: ''
+      Description: Provide IAM Role Inline Policy JSON.
+    IAMRoleInlinePolicy04Name:
+      Type: String
+      Default: ''
+      Description: Provide IAM Role Inline Policy name.
+    IAMRoleInlinePolicy04:
+      Type: String
+      Default: ''
+      Description: Provide IAM Role Inline Policy JSON.
+    IAMRoleInlinePolicy05Name:
+      Type: String
+      Default: ''
+      Description: Provide IAM Role Inline Policy name.
+    IAMRoleInlinePolicy05:
+      Type: String
+      Default: ''
+      Description: Provide IAM Role Inline Policy JSON.
+    IAMRoleInlinePolicy06Name:
+      Type: String
+      Default: ''
+      Description: Provide IAM Role Inline Policy name.
+    IAMRoleInlinePolicy06:
+      Type: String
+      Default: ''
+      Description: Provide IAM Role Inline Policy JSON.
+    IAMRoleInlinePolicy07Name:
+      Type: String
+      Default: ''
+      Description: Provide IAM Role Inline Policy name.
+    IAMRoleInlinePolicy07:
+      Type: String
+      Default: ''
+      Description: Provide IAM Role Inline Policy JSON.
+    IAMRoleInlinePolicy08Name:
+      Type: String
+      Default: ''
+      Description: Provide IAM Role Inline Policy name.
+    IAMRoleInlinePolicy08:
+      Type: String
+      Default: ''
+      Description: Provide IAM Role Inline Policy JSON.
+    IAMRoleInlinePolicy09Name:
+      Type: String
+      Default: ''
+      Description: Provide IAM Role Inline Policy name.
+    IAMRoleInlinePolicy09:
+      Type: String
+      Default: ''
+      Description: Provide IAM Role Inline Policy JSON.
+    IAMRoleInlinePolicy10Name:
+      Type: String
+      Default: ''
+      Description: Provide IAM Role Inline Policy name.
+    IAMRoleInlinePolicy10:
+      Type: String
+      Default: ''
+      Description: Provide IAM Role Inline Policy JSON.
+    IAMRoleManagedPolicyArn01:
+      Type: String
+      Default: ''
+      Description: Provide IAM Managed Policy ARN.
+    IAMRoleManagedPolicyArn02:
+      Type: String
+      Default: ''
+      Description: Provide IAM Managed Policy ARN.
+    IAMRoleManagedPolicyArn03:
+      Type: String
+      Default: ''
+      Description: Provide IAM Managed Policy ARN.
+    IAMRoleManagedPolicyArn04:
+      Type: String
+      Default: ''
+      Description: Provide IAM Managed Policy ARN.
+    IAMRoleManagedPolicyArn05:
+      Type: String
+      Default: ''
+      Description: Provide IAM Managed Policy ARN.
+    IAMRoleManagedPolicyArn06:
+      Type: String
+      Default: ''
+      Description: Provide IAM Managed Policy ARN.
+    IAMRoleManagedPolicyArn07:
+      Type: String
+      Default: ''
+      Description: Provide IAM Managed Policy ARN.
+    IAMRoleManagedPolicyArn08:
+      Type: String
+      Default: ''
+      Description: Provide IAM Managed Policy ARN.
+    IAMRoleManagedPolicyArn09:
+      Type: String
+      Default: ''
+      Description: Provide IAM Managed Policy ARN.
+Conditions: 
+  HasAssumeRolePolicyDocument: !Not [!Equals [!Ref 4RoleTrustPolicy, '']]
+  HasInstanceProfile: !Equals ['Yes', !Ref 5CreateInstanceProfile]
+  HasCustomerDenyPolicy: !Equals [Enable, !Ref 6InlcudeCustomerDenyPolicy]
+  HasCustomerTimedDenyPolicy: !Equals [Enable, !Ref 7InlcudeCustomerTimedDenyPolicy]
+  RoleInlinePolicy01NamePresent: !Not [!Equals [!Ref IAMRoleInlinePolicy01Name, '']]
+  RoleInlinePolicy01Present: !Not [!Equals [!Ref IAMRoleInlinePolicy01, '']]
+  RoleInlinePolicy02NamePresent: !Not [!Equals [!Ref IAMRoleInlinePolicy02Name, '']]
+  RoleInlinePolicy02Present: !Not [!Equals [!Ref IAMRoleInlinePolicy02, '']]
+  RoleInlinePolicy03NamePresent: !Not [!Equals [!Ref IAMRoleInlinePolicy03Name, '']]
+  RoleInlinePolicy03Present: !Not [!Equals [!Ref IAMRoleInlinePolicy03, '']]
+  RoleInlinePolicy04NamePresent: !Not [!Equals [!Ref IAMRoleInlinePolicy04Name, '']]
+  RoleInlinePolicy04Present: !Not [!Equals [!Ref IAMRoleInlinePolicy04, '']]
+  RoleInlinePolicy05NamePresent: !Not [!Equals [!Ref IAMRoleInlinePolicy05Name, '']]
+  RoleInlinePolicy05Present: !Not [!Equals [!Ref IAMRoleInlinePolicy05, '']]
+  RoleInlinePolicy06NamePresent: !Not [!Equals [!Ref IAMRoleInlinePolicy06Name, '']]
+  RoleInlinePolicy06Present: !Not [!Equals [!Ref IAMRoleInlinePolicy06, '']]
+  RoleInlinePolicy07NamePresent: !Not [!Equals [!Ref IAMRoleInlinePolicy07Name, '']]
+  RoleInlinePolicy07Present: !Not [!Equals [!Ref IAMRoleInlinePolicy07, '']]
+  RoleInlinePolicy08NamePresent: !Not [!Equals [!Ref IAMRoleInlinePolicy08Name, '']]
+  RoleInlinePolicy08Present: !Not [!Equals [!Ref IAMRoleInlinePolicy08, '']]
+  RoleInlinePolicy09NamePresent: !Not [!Equals [!Ref IAMRoleInlinePolicy09Name, '']]
+  RoleInlinePolicy09Present: !Not [!Equals [!Ref IAMRoleInlinePolicy09, '']]
+  RoleInlinePolicy10NamePresent: !Not [!Equals [!Ref IAMRoleInlinePolicy10Name, '']]
+  RoleInlinePolicy10Present: !Not [!Equals [!Ref IAMRoleInlinePolicy10, '']]
+  ManagedPolicyArn01Present: !Not [!Equals [!Ref IAMRoleManagedPolicyArn01, '']]
+  ManagedPolicyArn02Present: !Not [!Equals [!Ref IAMRoleManagedPolicyArn02, '']]
+  ManagedPolicyArn03Present: !Not [!Equals [!Ref IAMRoleManagedPolicyArn03, '']]
+  ManagedPolicyArn04Present: !Not [!Equals [!Ref IAMRoleManagedPolicyArn04, '']]
+  ManagedPolicyArn05Present: !Not [!Equals [!Ref IAMRoleManagedPolicyArn05, '']]
+  ManagedPolicyArn06Present: !Not [!Equals [!Ref IAMRoleManagedPolicyArn06, '']]
+  ManagedPolicyArn07Present: !Not [!Equals [!Ref IAMRoleManagedPolicyArn07, '']]
+  ManagedPolicyArn08Present: !Not [!Equals [!Ref IAMRoleManagedPolicyArn08, '']]
+  ManagedPolicyArn09Present: !Not [!Equals [!Ref IAMRoleManagedPolicyArn09, '']]
+Resources:
+    Role:
+      Type: 'AWS::IAM::Role'
+      Properties:
+        Tags:
+          - Key: RFC
+            Value: !Ref 1RFCID
+        RoleName: !Ref 2RoleName
+        Path: !Ref 3IAMPATH
+        AssumeRolePolicyDocument: 
+          !If
+            - HasAssumeRolePolicyDocument
+            - !Ref 4RoleTrustPolicy
+            - Version: '2012-10-17'
+              Statement:
+              - Sid: ''
+                Effect: Allow
+                Principal:
+                  Federated: !Sub arn:aws:iam::${AWS::AccountId}:saml-provider/customer-saml
+                Action: sts:AssumeRoleWithSAML
+                Condition:
+                  StringEquals:
+                    SAML:aud: https://signin.aws.amazon.com/saml
+              - !If 
+                - HasInstanceProfile
+                - Sid: ''
+                  Effect: Allow
+                  Principal:
+                    Service: 
+                      - ec2.amazonaws.com
+                  Action: sts:AssumeRole
+                - !Ref "AWS::NoValue"
+        ManagedPolicyArns:
+          - !If [HasCustomerDenyPolicy, !Sub 'arn:aws:iam::${AWS::AccountId}:policy/customer_deny_policy', !Ref "AWS::NoValue"]
+          - !If [ManagedPolicyArn01Present, !Ref 'IAMRoleManagedPolicyArn01', !Ref "AWS::NoValue"]
+          - !If [ManagedPolicyArn02Present, !Ref 'IAMRoleManagedPolicyArn02', !Ref "AWS::NoValue"]
+          - !If [ManagedPolicyArn03Present, !Ref 'IAMRoleManagedPolicyArn03', !Ref "AWS::NoValue"]
+          - !If [ManagedPolicyArn04Present, !Ref 'IAMRoleManagedPolicyArn04', !Ref "AWS::NoValue"]
+          - !If [ManagedPolicyArn05Present, !Ref 'IAMRoleManagedPolicyArn05', !Ref "AWS::NoValue"]
+          - !If [ManagedPolicyArn06Present, !Ref 'IAMRoleManagedPolicyArn06', !Ref "AWS::NoValue"]
+          - !If [ManagedPolicyArn07Present, !Ref 'IAMRoleManagedPolicyArn07', !Ref "AWS::NoValue"]
+          - !If [ManagedPolicyArn08Present, !Ref 'IAMRoleManagedPolicyArn08', !Ref "AWS::NoValue"]
+          - !If [ManagedPolicyArn09Present, !Ref 'IAMRoleManagedPolicyArn09', !Ref "AWS::NoValue"]
+    InstanceProfileRole:
+      Condition: HasInstanceProfile
+      Type: 'AWS::IAM::InstanceProfile'
+      Properties:
+        InstanceProfileName: !Ref 2RoleName
+        Path: !Ref 3IAMPATH
+        Roles:
+          - !Ref Role
+    RoleInlinePolicy01:
+      Condition: RoleInlinePolicy01Present
+      Type: 'AWS::IAM::Policy'
+      Properties:
+        PolicyName: !If [RoleInlinePolicy01NamePresent, !Ref 'IAMRoleInlinePolicy01Name', !Ref "AWS::NoValue"]
+        PolicyDocument: !If [RoleInlinePolicy01Present, !Ref 'IAMRoleInlinePolicy01', !Ref "AWS::NoValue"]
+        Roles:
+          - !Ref Role
+    RoleInlinePolicy02:
+      Condition: RoleInlinePolicy02Present
+      Type: 'AWS::IAM::Policy'
+      Properties:
+        PolicyName: !If [RoleInlinePolicy02NamePresent, !Ref 'IAMRoleInlinePolicy02Name', !Ref "AWS::NoValue"]
+        PolicyDocument: !If [RoleInlinePolicy02Present, !Ref 'IAMRoleInlinePolicy02', !Ref "AWS::NoValue"]
+        Roles:
+          - !Ref Role
+    RoleInlinePolicy03:
+      Condition: RoleInlinePolicy03Present
+      Type: 'AWS::IAM::Policy'
+      Properties:
+        PolicyName: !If [RoleInlinePolicy03NamePresent, !Ref 'IAMRoleInlinePolicy03Name', !Ref "AWS::NoValue"]
+        PolicyDocument: !If [RoleInlinePolicy03Present, !Ref 'IAMRoleInlinePolicy03', !Ref "AWS::NoValue"]
+        Roles:
+          - !Ref Role
+    RoleInlinePolicy04:
+      Condition: RoleInlinePolicy04Present
+      Type: 'AWS::IAM::Policy'
+      Properties:
+        PolicyName: !If [RoleInlinePolicy04NamePresent, !Ref 'IAMRoleInlinePolicy04Name', !Ref "AWS::NoValue"]
+        PolicyDocument: !If [RoleInlinePolicy04Present, !Ref 'IAMRoleInlinePolicy04', !Ref "AWS::NoValue"]
+        Roles:
+          - !Ref Role
+    RoleInlinePolicy05:
+      Condition: RoleInlinePolicy05Present
+      Type: 'AWS::IAM::Policy'
+      Properties:
+        PolicyName: !If [RoleInlinePolicy05NamePresent, !Ref 'IAMRoleInlinePolicy05Name', !Ref "AWS::NoValue"]
+        PolicyDocument: !If [RoleInlinePolicy05Present, !Ref 'IAMRoleInlinePolicy05', !Ref "AWS::NoValue"]
+        Roles:
+          - !Ref Role
+    RoleInlinePolicy06:
+      Condition: RoleInlinePolicy06Present
+      Type: 'AWS::IAM::Policy'
+      Properties:
+        PolicyName: !If [RoleInlinePolicy06NamePresent, !Ref 'IAMRoleInlinePolicy06Name', !Ref "AWS::NoValue"]
+        PolicyDocument: !If [RoleInlinePolicy06Present, !Ref 'IAMRoleInlinePolicy06', !Ref "AWS::NoValue"]
+        Roles:
+          - !Ref Role
+    RoleInlinePolicy07:
+      Condition: RoleInlinePolicy07Present
+      Type: 'AWS::IAM::Policy'
+      Properties:
+        PolicyName: !If [RoleInlinePolicy07NamePresent, !Ref 'IAMRoleInlinePolicy07Name', !Ref "AWS::NoValue"]
+        PolicyDocument: !If [RoleInlinePolicy07Present, !Ref 'IAMRoleInlinePolicy07', !Ref "AWS::NoValue"]
+        Roles:
+          - !Ref Role
+    RoleInlinePolicy08:
+      Condition: RoleInlinePolicy08Present
+      Type: 'AWS::IAM::Policy'
+      Properties:
+        PolicyName: !If [RoleInlinePolicy08NamePresent, !Ref 'IAMRoleInlinePolicy08Name', !Ref "AWS::NoValue"]
+        PolicyDocument: !If [RoleInlinePolicy08Present, !Ref 'IAMRoleInlinePolicy08', !Ref "AWS::NoValue"]
+        Roles:
+          - !Ref Role
+    RoleInlinePolicy09:
+      Condition: RoleInlinePolicy09Present
+      Type: 'AWS::IAM::Policy'
+      Properties:
+        PolicyName: !If [RoleInlinePolicy09NamePresent, !Ref 'IAMRoleInlinePolicy09Name', !Ref "AWS::NoValue"]
+        PolicyDocument: !If [RoleInlinePolicy09Present, !Ref 'IAMRoleInlinePolicy09', !Ref "AWS::NoValue"]
+        Roles:
+          - !Ref Role
+    RoleInlinePolicy10:
+      Condition: RoleInlinePolicy10Present
+      Type: 'AWS::IAM::Policy'
+      Properties:
+        PolicyName: !If [RoleInlinePolicy10NamePresent, !Ref 'IAMRoleInlinePolicy10Name', !Ref "AWS::NoValue"]
+        PolicyDocument: !If [RoleInlinePolicy10Present, !Ref 'IAMRoleInlinePolicy10', !Ref "AWS::NoValue"]
+        Roles:
+          - !Ref Role
+    UserInlinePolicyTimedDeny:
+      Condition: HasCustomerTimedDenyPolicy
+      Type: 'AWS::IAM::Policy'
+      Properties:
+        PolicyName: customer_timed_deny_policy
+        PolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Sid: DenyAllAccessBeforeStartTime
+              Effect: Deny
+              Action: "*"
+              Resource: "*"
+              Condition:
+                DateLessThan:
+                  aws:CurrentTime: !Sub "${8DenyAllAccessOutOfStartTime}"
+            - Sid: DenyAllAccessAfterEndTime
+              Effect: Deny
+              Action: "*"
+              Resource: "*"
+              Condition:
+                DateGreaterThan:
+                  aws:CurrentTime: !Sub "${9DenyAllAccessOutOfEndTime}"
+        Roles:
+          - !Ref Role
+Outputs:
+    RoleArn:
+      Value: !GetAtt [Role, Arn]
+      Description: IAM Role Arn
+    RoleId:
+      Value: !GetAtt [Role, RoleId]
+      Description: IAM Role Id
+    InstanceProfileRoleArn:
+      Condition: HasInstanceProfile
+      Value: !GetAtt [InstanceProfileRole, Arn]
+      Description: Instance Profile Role Arn
+    RfcId:
+      Value: !Ref 1RFCID
+      Description: Request For Change ID

@@ -1,0 +1,391 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Parameters:
+    1RFCID:
+      Type: String
+      Default: RFCID
+      Description: Add Request For Change ID.
+    2IAMUserName:
+      Type: String
+      Default: UserName
+      Description: >-
+        Specify name of IAM user to create. 
+        Use CloudFormation stack name stack-iam-<USERNAME> .
+    3IAMPATH:
+      Type: String
+      Default: /
+      Description: >-
+        Specify custom IAM path to deploy user to. 
+        Default IAM path is always / . 
+        Example of custom IAM path would be /service-user/. 
+    4IAMUserType:
+      Type: String
+      Default: 'Console User'
+      AllowedValues:
+        - 'Console User'
+        - 'Programmatic User'
+    5InlcudeCustomerDenyPolicy:
+      Type: String
+      Default: 'Disable'
+      AllowedValues:
+        - 'Enable'
+        - 'Disable'
+    6InlcudeCustomerTimedDenyPolicy:
+      Type: String
+      Default: 'Disable'
+      AllowedValues:
+        - 'Enable'
+        - 'Disable'
+    7DenyAllAccessOutOfStartTime:
+      Type: String
+      Default: '2020-01-01T00:00:00Z'
+      Description: Deny All Access Out Of Start Time. Example Format "YYYY-MM-DDThh:mm:ssZ". Note If InlcudeCustomerTimedDenyPolicy is set to "Disable" this field is ignored.
+      AllowedPattern: "^\\d{4}-\\d{2}-\\d{2}T\\d{2}\\:\\d{2}\\:\\d{2}[Z]\\Z$"
+    8DenyAllAccessOutOfEndTime:
+      Type: String
+      Default: '2020-01-01T23:59:59Z'
+      Description: Deny All Access Out Of End Time. Example Format "YYYY-MM-DDThh:mm:ssZ". Note If InlcudeCustomerTimedDenyPolicy is set to "Disable" this field is ignored.
+      AllowedPattern: "^\\d{4}-\\d{2}-\\d{2}T\\d{2}\\:\\d{2}\\:\\d{2}[Z]\\Z$"
+    IAMUserInlinePolicy01Name:
+      Type: String
+      Default: ''
+      Description: Provide IAM User Inline Policy name.
+    IAMUserInlinePolicy01:
+      Type: String
+      Default: ''
+      Description: Provide IAM User Inline Policy JSON.
+    IAMUserInlinePolicy02Name:
+      Type: String
+      Default: ''
+      Description: Provide IAM User Inline Policy name.
+    IAMUserInlinePolicy02:
+      Type: String
+      Default: ''
+      Description: Provide IAM User Inline Policy JSON.
+    IAMUserInlinePolicy03Name:
+      Type: String
+      Default: ''
+      Description: Provide IAM User Inline Policy name.
+    IAMUserInlinePolicy03:
+      Type: String
+      Default: ''
+      Description: Provide IAM User Inline Policy JSON.
+    IAMUserInlinePolicy04Name:
+      Type: String
+      Default: ''
+      Description: Provide IAM User Inline Policy name.
+    IAMUserInlinePolicy04:
+      Type: String
+      Default: ''
+      Description: Provide IAM User Inline Policy JSON.
+    IAMUserInlinePolicy05Name:
+      Type: String
+      Default: ''
+      Description: Provide IAM User Inline Policy name.
+    IAMUserInlinePolicy05:
+      Type: String
+      Default: ''
+      Description: Provide IAM User Inline Policy JSON.
+    IAMUserInlinePolicy06Name:
+      Type: String
+      Default: ''
+      Description: Provide IAM User Inline Policy name.
+    IAMUserInlinePolicy06:
+      Type: String
+      Default: ''
+      Description: Provide IAM User Inline Policy JSON.
+    IAMUserInlinePolicy07Name:
+      Type: String
+      Default: ''
+      Description: Provide IAM User Inline Policy name.
+    IAMUserInlinePolicy07:
+      Type: String
+      Default: ''
+      Description: Provide IAM User Inline Policy JSON.
+    IAMUserInlinePolicy08Name:
+      Type: String
+      Default: ''
+      Description: Provide IAM User Inline Policy name.
+    IAMUserInlinePolicy08:
+      Type: String
+      Default: ''
+      Description: Provide IAM User Inline Policy JSON.
+    IAMUserInlinePolicy09Name:
+      Type: String
+      Default: ''
+      Description: Provide IAM User Inline Policy name.
+    IAMUserInlinePolicy09:
+      Type: String
+      Default: ''
+      Description: Provide IAM User Inline Policy JSON.
+    IAMUserInlinePolicy10Name:
+      Type: String
+      Default: ''
+      Description: Provide IAM User Inline Policy name.
+    IAMUserInlinePolicy10:
+      Type: String
+      Default: ''
+      Description: Provide IAM User Inline Policy JSON.
+    IAMUserManagedPolicyArn01:
+      Type: String
+      Default: ''
+      Description: Provide IAM Managed Policy ARN.
+    IAMUserManagedPolicyArn02:
+      Type: String
+      Default: ''
+      Description: Provide IAM Managed Policy ARN.
+    IAMUserManagedPolicyArn03:
+      Type: String
+      Default: ''
+      Description: Provide IAM Managed Policy ARN.
+    IAMUserManagedPolicyArn04:
+      Type: String
+      Default: ''
+      Description: Provide IAM Managed Policy ARN.
+    IAMUserManagedPolicyArn05:
+      Type: String
+      Default: ''
+      Description: Provide IAM Managed Policy ARN.
+    IAMUserManagedPolicyArn06:
+      Type: String
+      Default: ''
+      Description: Provide IAM Managed Policy ARN.
+    IAMUserManagedPolicyArn07:
+      Type: String
+      Default: ''
+      Description: Provide IAM Managed Policy ARN.
+    IAMUserManagedPolicyArn08:
+      Type: String
+      Default: ''
+      Description: Provide IAM Managed Policy ARN.
+    IAMUserManagedPolicyArn09:
+      Type: String
+      Default: ''
+      Description: Provide IAM Managed Policy ARN.
+Conditions: 
+    IAMConsoleUser: !Equals ['Console User', !Ref 4IAMUserType]
+    IAMCLIUser: !Equals ['Programmatic User', !Ref 4IAMUserType]
+    HasCustomerDenyPolicy: !Equals ['Enable', !Ref 5InlcudeCustomerDenyPolicy]
+    HasCustomerTimedDenyPolicy: !Equals ['Enable', !Ref 6InlcudeCustomerTimedDenyPolicy]
+    UserInlinePolicy01NamePresent: !Not [!Equals [!Ref IAMUserInlinePolicy01Name, '']]
+    UserInlinePolicy01Present: !Not [!Equals [!Ref IAMUserInlinePolicy01, '']]
+    UserInlinePolicy02NamePresent: !Not [!Equals [!Ref IAMUserInlinePolicy02Name, '']]
+    UserInlinePolicy02Present: !Not [!Equals [!Ref IAMUserInlinePolicy02, '']]
+    UserInlinePolicy03NamePresent: !Not [!Equals [!Ref IAMUserInlinePolicy03Name, '']]
+    UserInlinePolicy03Present: !Not [!Equals [!Ref IAMUserInlinePolicy03, '']]
+    UserInlinePolicy04NamePresent: !Not [!Equals [!Ref IAMUserInlinePolicy04Name, '']]
+    UserInlinePolicy04Present: !Not [!Equals [!Ref IAMUserInlinePolicy04, '']]
+    UserInlinePolicy05NamePresent: !Not [!Equals [!Ref IAMUserInlinePolicy05Name, '']]
+    UserInlinePolicy05Present: !Not [!Equals [!Ref IAMUserInlinePolicy05, '']]
+    UserInlinePolicy06NamePresent: !Not [!Equals [!Ref IAMUserInlinePolicy06Name, '']]
+    UserInlinePolicy06Present: !Not [!Equals [!Ref IAMUserInlinePolicy06, '']]
+    UserInlinePolicy07NamePresent: !Not [!Equals [!Ref IAMUserInlinePolicy07Name, '']]
+    UserInlinePolicy07Present: !Not [!Equals [!Ref IAMUserInlinePolicy07, '']]
+    UserInlinePolicy08NamePresent: !Not [!Equals [!Ref IAMUserInlinePolicy08Name, '']]
+    UserInlinePolicy08Present: !Not [!Equals [!Ref IAMUserInlinePolicy08, '']]
+    UserInlinePolicy09NamePresent: !Not [!Equals [!Ref IAMUserInlinePolicy09Name, '']]
+    UserInlinePolicy09Present: !Not [!Equals [!Ref IAMUserInlinePolicy09, '']]
+    UserInlinePolicy10NamePresent: !Not [!Equals [!Ref IAMUserInlinePolicy10Name, '']]
+    UserInlinePolicy10Present: !Not [!Equals [!Ref IAMUserInlinePolicy10, '']]
+    ManagedPolicyArn01Present: !Not [!Equals [!Ref IAMUserManagedPolicyArn01, '']]
+    ManagedPolicyArn02Present: !Not [!Equals [!Ref IAMUserManagedPolicyArn02, '']]
+    ManagedPolicyArn03Present: !Not [!Equals [!Ref IAMUserManagedPolicyArn03, '']]
+    ManagedPolicyArn04Present: !Not [!Equals [!Ref IAMUserManagedPolicyArn04, '']]
+    ManagedPolicyArn05Present: !Not [!Equals [!Ref IAMUserManagedPolicyArn05, '']]
+    ManagedPolicyArn06Present: !Not [!Equals [!Ref IAMUserManagedPolicyArn06, '']]
+    ManagedPolicyArn07Present: !Not [!Equals [!Ref IAMUserManagedPolicyArn07, '']]
+    ManagedPolicyArn08Present: !Not [!Equals [!Ref IAMUserManagedPolicyArn08, '']]
+    ManagedPolicyArn09Present: !Not [!Equals [!Ref IAMUserManagedPolicyArn09, '']]
+Resources:
+    IAMUserConsole:
+      Condition: IAMConsoleUser
+      DependsOn: UserConsolePasswordSecretArn
+      Type: 'AWS::IAM::User'
+      Properties:
+        Tags:
+          - Key: RFC
+            Value: !Ref 1RFCID
+        UserName: !Ref 2IAMUserName
+        Path: !Ref 3IAMPATH
+        LoginProfile: 
+          Password: !If [IAMConsoleUser, !Sub '{{resolve:secretsmanager:customer-shares/${2IAMUserName}-console:SecretString:Password}}', !Ref "AWS::NoValue"]
+          PasswordResetRequired: !If [IAMConsoleUser, true, !Ref "AWS::NoValue"]
+        ManagedPolicyArns:
+          - !If [HasCustomerDenyPolicy, !Sub 'arn:aws:iam::${AWS::AccountId}:policy/customer_deny_policy', !Ref "AWS::NoValue"]
+          - !If [ManagedPolicyArn01Present, !Ref 'IAMUserManagedPolicyArn01', !Ref "AWS::NoValue"]
+          - !If [ManagedPolicyArn02Present, !Ref 'IAMUserManagedPolicyArn02', !Ref "AWS::NoValue"]
+          - !If [ManagedPolicyArn03Present, !Ref 'IAMUserManagedPolicyArn03', !Ref "AWS::NoValue"]
+          - !If [ManagedPolicyArn04Present, !Ref 'IAMUserManagedPolicyArn04', !Ref "AWS::NoValue"]
+          - !If [ManagedPolicyArn05Present, !Ref 'IAMUserManagedPolicyArn05', !Ref "AWS::NoValue"]
+          - !If [ManagedPolicyArn06Present, !Ref 'IAMUserManagedPolicyArn06', !Ref "AWS::NoValue"]
+          - !If [ManagedPolicyArn07Present, !Ref 'IAMUserManagedPolicyArn07', !Ref "AWS::NoValue"]
+          - !If [ManagedPolicyArn08Present, !Ref 'IAMUserManagedPolicyArn08', !Ref "AWS::NoValue"]
+          - !If [ManagedPolicyArn09Present, !Ref 'IAMUserManagedPolicyArn09', !Ref "AWS::NoValue"]
+    IAMUserCLI:
+      Condition: IAMCLIUser
+      Type: 'AWS::IAM::User'
+      Properties:
+        Tags:
+          - Key: RFC
+            Value: !Ref 1RFCID
+        UserName: !Ref 2IAMUserName
+        Path: !Ref 3IAMPATH
+        ManagedPolicyArns:
+          - !If [HasCustomerDenyPolicy, !Sub 'arn:aws:iam::${AWS::AccountId}:policy/customer_deny_policy', !Ref "AWS::NoValue"]
+          - !If [ManagedPolicyArn01Present, !Ref 'IAMUserManagedPolicyArn01', !Ref "AWS::NoValue"]
+          - !If [ManagedPolicyArn02Present, !Ref 'IAMUserManagedPolicyArn02', !Ref "AWS::NoValue"]
+          - !If [ManagedPolicyArn03Present, !Ref 'IAMUserManagedPolicyArn03', !Ref "AWS::NoValue"]
+          - !If [ManagedPolicyArn04Present, !Ref 'IAMUserManagedPolicyArn04', !Ref "AWS::NoValue"]
+          - !If [ManagedPolicyArn05Present, !Ref 'IAMUserManagedPolicyArn05', !Ref "AWS::NoValue"]
+          - !If [ManagedPolicyArn06Present, !Ref 'IAMUserManagedPolicyArn06', !Ref "AWS::NoValue"]
+          - !If [ManagedPolicyArn07Present, !Ref 'IAMUserManagedPolicyArn07', !Ref "AWS::NoValue"]
+          - !If [ManagedPolicyArn08Present, !Ref 'IAMUserManagedPolicyArn08', !Ref "AWS::NoValue"]
+          - !If [ManagedPolicyArn09Present, !Ref 'IAMUserManagedPolicyArn09', !Ref "AWS::NoValue"]
+    UserInlinePolicyTimedDeny:
+      Condition: HasCustomerTimedDenyPolicy
+      Type: 'AWS::IAM::Policy'
+      Properties:
+        PolicyName: customer_timed_deny_policy
+        PolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Sid: DenyAllAccessBeforeStartTime
+              Effect: Deny
+              Action: "*"
+              Resource: "*"
+              Condition:
+                DateLessThan:
+                  aws:CurrentTime: !Sub "${7DenyAllAccessOutOfStartTime}"
+            - Sid: DenyAllAccessAfterEndTime
+              Effect: Deny
+              Action: "*"
+              Resource: "*"
+              Condition:
+                DateGreaterThan:
+                  aws:CurrentTime: !Sub "${8DenyAllAccessOutOfEndTime}"
+        Users:
+          - !If [IAMConsoleUser, !Ref IAMUserConsole, !Ref IAMUserCLI]
+    UserInlinePolicy01:
+      Condition: UserInlinePolicy01Present
+      Type: 'AWS::IAM::Policy'
+      Properties:
+        PolicyName: !If [UserInlinePolicy01NamePresent, !Ref 'IAMUserInlinePolicy01Name', !Ref "AWS::NoValue"]
+        PolicyDocument: !If [UserInlinePolicy01Present, !Ref 'IAMUserInlinePolicy01', !Ref "AWS::NoValue"]
+        Users:
+          - !If [IAMConsoleUser, !Ref IAMUserConsole, !Ref IAMUserCLI]
+    UserInlinePolicy02:
+      Condition: UserInlinePolicy02Present
+      Type: 'AWS::IAM::Policy'
+      Properties:
+        PolicyName: !If [UserInlinePolicy02NamePresent, !Ref 'IAMUserInlinePolicy02Name', !Ref "AWS::NoValue"]
+        PolicyDocument: !If [UserInlinePolicy02Present, !Ref 'IAMUserInlinePolicy02', !Ref "AWS::NoValue"]
+        Users:
+          - !If [IAMConsoleUser, !Ref IAMUserConsole, !Ref IAMUserCLI]
+    UserInlinePolicy03:
+      Condition: UserInlinePolicy03Present
+      Type: 'AWS::IAM::Policy'
+      Properties:
+        PolicyName: !If [UserInlinePolicy03NamePresent, !Ref 'IAMUserInlinePolicy03Name', !Ref "AWS::NoValue"]
+        PolicyDocument: !If [UserInlinePolicy03Present, !Ref 'IAMUserInlinePolicy03', !Ref "AWS::NoValue"]
+        Users:
+          - !If [IAMConsoleUser, !Ref IAMUserConsole, !Ref IAMUserCLI]
+    UserInlinePolicy04:
+      Condition: UserInlinePolicy04Present
+      Type: 'AWS::IAM::Policy'
+      Properties:
+        PolicyName: !If [UserInlinePolicy04NamePresent, !Ref 'IAMUserInlinePolicy04Name', !Ref "AWS::NoValue"]
+        PolicyDocument: !If [UserInlinePolicy04Present, !Ref 'IAMUserInlinePolicy04', !Ref "AWS::NoValue"]
+        Users:
+          - !If [IAMConsoleUser, !Ref IAMUserConsole, !Ref IAMUserCLI]
+    UserInlinePolicy05:
+      Condition: UserInlinePolicy05Present
+      Type: 'AWS::IAM::Policy'
+      Properties:
+        PolicyName: !If [UserInlinePolicy05NamePresent, !Ref 'IAMUserInlinePolicy05Name', !Ref "AWS::NoValue"]
+        PolicyDocument: !If [UserInlinePolicy05Present, !Ref 'IAMUserInlinePolicy05', !Ref "AWS::NoValue"]
+        Users:
+          - !If [IAMConsoleUser, !Ref IAMUserConsole, !Ref IAMUserCLI]
+    UserInlinePolicy06:
+      Condition: UserInlinePolicy06Present
+      Type: 'AWS::IAM::Policy'
+      Properties:
+        PolicyName: !If [UserInlinePolicy06NamePresent, !Ref 'IAMUserInlinePolicy06Name', !Ref "AWS::NoValue"]
+        PolicyDocument: !If [UserInlinePolicy06Present, !Ref 'IAMUserInlinePolicy06', !Ref "AWS::NoValue"]
+        Users:
+          - !If [IAMConsoleUser, !Ref IAMUserConsole, !Ref IAMUserCLI]
+    UserInlinePolicy07:
+      Condition: UserInlinePolicy07Present
+      Type: 'AWS::IAM::Policy'
+      Properties:
+        PolicyName: !If [UserInlinePolicy07NamePresent, !Ref 'IAMUserInlinePolicy07Name', !Ref "AWS::NoValue"]
+        PolicyDocument: !If [UserInlinePolicy07Present, !Ref 'IAMUserInlinePolicy07', !Ref "AWS::NoValue"]
+        Users:
+          - !If [IAMConsoleUser, !Ref IAMUserConsole, !Ref IAMUserCLI]
+    UserInlinePolicy08:
+      Condition: UserInlinePolicy08Present
+      Type: 'AWS::IAM::Policy'
+      Properties:
+        PolicyName: !If [UserInlinePolicy08NamePresent, !Ref 'IAMUserInlinePolicy08Name', !Ref "AWS::NoValue"]
+        PolicyDocument: !If [UserInlinePolicy08Present, !Ref 'IAMUserInlinePolicy08', !Ref "AWS::NoValue"]
+        Users:
+          - !If [IAMConsoleUser, !Ref IAMUserConsole, !Ref IAMUserCLI]
+    UserInlinePolicy09:
+      Condition: UserInlinePolicy09Present
+      Type: 'AWS::IAM::Policy'
+      Properties:
+        PolicyName: !If [UserInlinePolicy09NamePresent, !Ref 'IAMUserInlinePolicy09Name', !Ref "AWS::NoValue"]
+        PolicyDocument: !If [UserInlinePolicy09Present, !Ref 'IAMUserInlinePolicy09', !Ref "AWS::NoValue"]
+        Users:
+          - !If [IAMConsoleUser, !Ref IAMUserConsole, !Ref IAMUserCLI]
+    UserInlinePolicy10:
+      Condition: UserInlinePolicy10Present
+      Type: 'AWS::IAM::Policy'
+      Properties:
+        PolicyName: !If [UserInlinePolicy10NamePresent, !Ref 'IAMUserInlinePolicy10Name', !Ref "AWS::NoValue"]
+        PolicyDocument: !If [UserInlinePolicy10Present, !Ref 'IAMUserInlinePolicy10', !Ref "AWS::NoValue"]
+        Users:
+          - !If [IAMConsoleUser, !Ref IAMUserConsole, !Ref IAMUserCLI]
+    UserAccessKey:
+      Condition: IAMCLIUser
+      Type: 'AWS::IAM::AccessKey'
+      Properties:
+        UserName: !Ref IAMUserCLI
+    UserAccessKeySecretArn:
+      Condition: IAMCLIUser
+      DependsOn: UserAccessKey
+      Type: 'AWS::SecretsManager::Secret'
+      Properties:
+        Name: !Sub 'customer-shares/${2IAMUserName}-cli'
+        Description: "This secret has a dynamically generated secret in SecretString."
+        SecretString: !Sub '{"AWS_ACCESS_KEY_ID":"${UserAccessKey}","AWS_SECRET_ACCESS_KEY":"${UserAccessKey.SecretAccessKey}"}'
+        Tags:
+          - Key: RFC
+            Value: !Ref 1RFCID
+    UserConsolePasswordSecretArn:
+      Condition: IAMConsoleUser
+      Type: 'AWS::SecretsManager::Secret'
+      Properties:
+        Name: !Sub 'customer-shares/${2IAMUserName}-console'
+        Description: "This secret has a dynamically generated secret password in SecretString."
+        GenerateSecretString: 
+          SecretStringTemplate: !Sub '{"Username": "${2IAMUserName}"}'
+          GenerateStringKey: "Password"
+          PasswordLength: 30
+          ExcludeCharacters: '"@/\'
+        Tags:
+          - Key: RFC
+            Value: !Ref 1RFCID
+Outputs:
+    IAMUserArn:
+      Value: !If [IAMConsoleUser, !GetAtt [IAMUserConsole, Arn], !GetAtt [IAMUserCLI, Arn]]
+      Description: IAM User Arn
+    UserConsolePasswordSecretArn:
+      Condition: IAMConsoleUser
+      Value: !Ref UserConsolePasswordSecretArn
+      Description: IAM User Console Password Secret Arn
+    UserAccessKeySecretArn:
+      Condition: IAMCLIUser
+      Value: !Ref UserAccessKeySecretArn
+      Description: IAM User AccessKey Secret Arn
+    RfcId:
+      Value: !Ref 1RFCID
+      Description: Request For Change ID

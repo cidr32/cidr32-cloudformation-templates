@@ -1,0 +1,43 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Parameters:
+    1AWSServiceName:
+      Type: String
+      Default: 'awsservicename'
+      MinLength: 1
+      MaxLength: 114
+      AllowedPattern: ^[a-z0-9\-.]*$
+      Description: >-
+        The service principal for the AWS service to which this role is attached. For example sso in: sso.amazonaws.com . 
+        Use CloudFormation stack name stack-iam-slr-<AWSServiceName> .
+    2CustomSuffix:
+      Type: String
+      Default: ''
+      MaxLength: 64
+      AllowedPattern: ^[a-z0-9\-.]*$
+      Description: >-
+        OPTIONAL - A string that you provide, which is combined with the service-provided prefix to form the complete role name. 
+        Some services do not support the CustomSuffix parameter. 
+        If you provide an optional suffix and the operation fails, try the operation again without the suffix.
+    3Description:
+      Type: String
+      Default: ''
+      MaxLength: 1000
+      Description: >-
+        OPTIONAL - The description of the role.
+Conditions:
+    HasCustomSuffix: !Not [!Equals [!Ref 2CustomSuffix, '']]
+    HasDescription: !Not [!Equals [!Ref 3Description, '']]
+Resources:
+    ServiceLinkedRole:
+      Type: 'AWS::IAM::ServiceLinkedRole'
+      Properties:
+        AWSServiceName: !Sub '${1AWSServiceName}.amazonaws.com'
+        CustomSuffix: !If [HasCustomSuffix, !Ref 2CustomSuffix, !Ref "AWS::NoValue"]
+        Description: !If [HasDescription, !Ref 3Description, !Ref "AWS::NoValue"]
+Outputs:
+    ServiceLinkedRoleId:
+      Value: !Ref ServiceLinkedRole
+      Description: IAM Service Linked Role
+    RoleDescription:
+      Value: !Ref 3Description
+      Description: IAM Role Description
